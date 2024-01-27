@@ -14,9 +14,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let scene: UIWindowScene = (scene as? UIWindowScene) else { return }
         
-        let databaseParcelInformationPersistence = DatabaseParcelInformationPersistence()
-        let parcelProcessor: ParcelOrderProcessor = ParcelOrderProcessor(parcelInformationPersistence: databaseParcelInformationPersistence)
-        let viewController: ParcelOrderViewController = ParcelOrderViewController(parcelProcessor: parcelProcessor)
+        let viewController = ParcelOrderFactory.createParcelOrderViewController()
         let navigationController: UINavigationController = UINavigationController(rootViewController: viewController)
         navigationController.navigationBar.prefersLargeTitles = true
         navigationController.navigationBar.tintColor = .black
@@ -26,5 +24,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         self.window = window
         window.makeKeyAndVisible()
+    }
+}
+
+class ParcelOrderFactory {
+    static func createParcelOrderViewController() -> ParcelOrderViewController {
+        let databaseParcelInformationPersistence = DatabaseParcelInformationPersistence()
+        let parcelProcessor = ParcelOrderProcessor(parcelInformationPersistence: databaseParcelInformationPersistence)
+        return ParcelOrderViewController(parcelProcessor: parcelProcessor)
     }
 }
