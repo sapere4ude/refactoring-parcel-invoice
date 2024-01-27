@@ -35,9 +35,16 @@ struct CouponDiscount: DiscountStrategy {
 
 enum Discount: Int {
     case none = 0, vip, coupon
-    
-    var strategy: DiscountStrategy {
-        let strategies: [DiscountStrategy] = [NoDiscount(), VIPDiscount(), CouponDiscount()]
-        return strategies.first { $0.canAccept(method: self) } ?? NoDiscount()
+}
+
+struct DiscountStrategyProvider {
+    private var strategies: [DiscountStrategy] = []
+
+    mutating func register(strategy: DiscountStrategy) {
+        strategies.append(strategy)
+    }
+
+    func strategy(for discount: Discount) -> DiscountStrategy {
+        return strategies.first { $0.canAccept(method: discount) } ?? NoDiscount()
     }
 }

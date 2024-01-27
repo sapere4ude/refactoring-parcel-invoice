@@ -31,14 +31,25 @@ struct Receiver {
 
 struct Charge {
     let deliveryCost: Int
-    let discount: Discount
-    var discountedCost: Int {
-        return discount.strategy.applyDiscount(deliveryCost: deliveryCost)
-    }
+    private let discount: Discount
+    private var discountStrategyProvider: DiscountStrategyProvider
     
     init(deliveryCost: Int, discount: Discount) {
         self.deliveryCost = deliveryCost
         self.discount = discount
+        self.discountStrategyProvider = DiscountStrategyProvider()
+        discountStrategyProvider.register(strategy: NoDiscount())
+        discountStrategyProvider.register(strategy: VIPDiscount())
+        discountStrategyProvider.register(strategy: CouponDiscount())
+    }
+    
+    private func caculateDiscountCost() -> Int {
+        let strategy = discountStrategyProvider.strategy(for: discount)
+        return strategy.applyDiscount(deliveryCost: deliveryCost)
+    }
+    
+    var discountedCost: Int {
+        return caculateDiscountCost()
     }
 }
 
